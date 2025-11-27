@@ -1,81 +1,96 @@
 ---
 layout: page
-title: project 3 with very long name
-description: a project that redirects to another website
-img: assets/img/7.jpg
-redirect: https://unsplash.com
+title: SemiSAM
+description: Foundation Model-Driven Co-Training for Medical Image Segmentation
+img: assets/img/semisam.jpg
 importance: 3
-category: work
+category: research
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
-
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
-
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
-
 <div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+    <div class="col-sm-12">
+        <p class="text-muted">
+            <strong>Role:</strong> <span class="badge bg-primary">Project Lead</span> &nbsp;|&nbsp;
+            <strong>Affiliation:</strong> <a href="https://xulabs.github.io/">Xu Lab, Carnegie Mellon University</a> &nbsp;|&nbsp;
+            <strong>Advisor:</strong> <a href="https://xulabs.github.io/min-xu/">Prof. Min Xu</a>
+        </p>
     </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
 </div>
 
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+---
+
+## The Challenge
+
+The **Segment Anything Model (SAM)** represents a paradigm shift in computer vision—a foundation model trained on over 1 billion masks that demonstrates remarkable zero-shot generalization. However, SAM's power comes with a critical limitation for medical imaging: **it lacks domain-specific knowledge**. Medical images (histopathology, CT, MRI, ultrasound) have fundamentally different characteristics from natural images, and SAM's prompt-based interface requires expert guidance for every prediction, making it impractical for clinical deployment.
+
+The naive solution—fine-tuning SAM on medical data—risks catastrophic forgetting of the rich generalizable representations that make SAM powerful in the first place.
+
+---
+
+## The Method
+
+We propose **SemiSAM**, a foundation-model-driven co-training framework that transfers SAM's knowledge to a lightweight medical segmentation network without destroying SAM's pretrained representations.
 
 <div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+    <div class="col-sm-10 mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/semisam.jpg" title="Figure 1: Co-training pipeline between SAM and the student network." class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
+    <strong>Figure 1:</strong> Co-training pipeline between SAM and the student network. SAM provides pseudo-labels for unlabeled medical images, while the student network learns domain-specific features. Bidirectional knowledge distillation ensures complementary learning.
 </div>
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
+### Framework Architecture
 
-{% raw %}
+**SemiSAM** operates through a principled two-branch co-training scheme:
 
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
+1. **SAM Branch (Teacher)**: The frozen SAM model processes unlabeled medical images using automatically generated prompts (derived from image saliency or prior anatomical knowledge). SAM's predictions serve as pseudo-labels for the student network.
 
-{% endraw %}
+2. **Student Branch**: A lightweight medical segmentation network (e.g., U-Net, TransUNet) learns from:
+   - **Labeled data**: Standard supervised loss on expert annotations
+   - **Pseudo-labels**: Distillation loss from SAM's predictions on unlabeled data
+
+3. **Bidirectional Knowledge Transfer**: The key innovation is that learning flows both ways:
+
+$$
+\mathcal{L}_{\text{total}} = \mathcal{L}_{\text{sup}}(y, \hat{y}_{\text{student}}) + \lambda_1 \mathcal{L}_{\text{distill}}(\hat{y}_{\text{SAM}}, \hat{y}_{\text{student}}) + \lambda_2 \mathcal{L}_{\text{consistency}}
+$$
+
+### Prompt-Free Deployment
+
+A critical advantage of SemiSAM is that the trained student network requires **no prompts at inference time**. The student has internalized SAM's segmentation knowledge while learning domain-specific medical features, enabling fully automatic segmentation.
+
+### Technical Innovations
+
+| Component | Description |
+|-----------|-------------|
+| **Automatic Prompt Generation** | Saliency-based and anatomical prior prompts eliminate manual annotation |
+| **Confidence-Weighted Distillation** | High-confidence SAM predictions receive larger weights |
+| **Feature Alignment Loss** | Intermediate feature matching preserves SAM's representation structure |
+
+---
+
+## Why This Matters
+
+SemiSAM exemplifies my research philosophy of **foundation-model-driven design**:
+
+> *"Rather than treating foundation models as black boxes to fine-tune, we leverage their complementary strengths through principled co-training."*
+
+This approach offers three key advantages:
+1. **Preserves SAM's generalization**: SAM remains frozen, retaining its powerful zero-shot capabilities
+2. **Enables efficient deployment**: The student network is lightweight and prompt-free
+3. **Maximizes unlabeled data**: Abundant unannotated medical images become useful training signal
+
+---
+
+## Current Status
+
+This is an **ongoing project** where I serve as the **lead researcher**, coordinating the experimental design, implementation, and manuscript preparation. Results are being prepared for submission to a top-tier venue.
+
+---
+
+## Related Work
+
+This project builds on my broader research in semi-supervised medical imaging:
+- Semi-MoE (BMVC 2025): Mixture-of-Experts for handling distribution shifts
+- HDC (CVPRW 2025): Hierarchical distillation for noise-robust pseudo-labels

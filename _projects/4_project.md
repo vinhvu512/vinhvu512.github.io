@@ -1,80 +1,86 @@
 ---
 layout: page
-title: project 4
-description: another without an image
-img:
-importance: 3
-category: fun
+title: 3D Y-Net for Single-Cell Tracking
+description: Siamese Architecture for 3D Time-Lapse Microscopy Analysis
+img: assets/img/6.jpg
+importance: 4
+category: research
 ---
 
-Every project has a beautiful feature showcase page.
-It's easy to include images in a flexible 3-column grid format.
-Make your photos 1/3, 2/3, or full width.
+## Overview
 
-To give your project a background in the portfolio page, just add the img tag to the front matter like so:
+During my **international research internship** at the [Integrated MechanoBioSystems Lab](https://sites.google.com/site/imbs3dprinting/Home?authuser=0), National Cheng Kung University (NCKU), Taiwan, I developed a **Y-Net Siamese architecture** for tracking single cells in 3D time-lapse microscopy images.
 
-    ---
-    layout: page
-    title: project
-    description: a project with a background image
-    img: /assets/img/12.jpg
-    ---
+This project represents my experience in **3D Computer Vision** and **international research collaboration**.
 
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/1.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/3.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    Caption photos easily. On the left, a road goes through a tunnel. Middle, leaves artistically fall in a hipster photoshoot. Right, in another hipster photoshoot, a lumberjack grasps a handful of pine needles.
-</div>
-<div class="row">
-    <div class="col-sm mt-3 mt-md-0">
-        {% include figure.liquid loading="eager" path="assets/img/5.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-</div>
-<div class="caption">
-    This image can also have a caption. It's like magic.
-</div>
+---
 
-You can also put regular text between your rows of images.
-Say you wanted to write a little bit about your project before you posted the rest of the images.
-You describe how you toiled, sweated, _bled_ for your project, and then... you reveal its glory in the next row of images.
+## The Problem
+
+Cell tracking in 3D time-lapse microscopy is fundamental to understanding:
+- Cell migration dynamics
+- Cell division and proliferation
+- Response to mechanical stimuli
+
+However, 3D cell tracking presents unique challenges:
+
+1. **Volumetric complexity**: Cells move in all three spatial dimensions
+2. **Temporal associations**: Linking cells across time frames requires robust feature matching
+3. **Morphological changes**: Cells deform, divide, and sometimes die during observation
+
+---
+
+## Our Solution: 3D Y-Net Siamese Architecture
 
 <div class="row justify-content-sm-center">
-    <div class="col-sm-8 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-    </div>
-    <div class="col-sm-4 mt-3 mt-md-0">
-        {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
+    <div class="col-sm-10 mt-3 mt-md-0">
+        {% include figure.liquid path="assets/img/6.jpg" title="3D Y-Net Architecture" class="img-fluid rounded z-depth-1" %}
     </div>
 </div>
 <div class="caption">
-    You can also have artistically styled 2/3 + 1/3 images, like these.
+    Conceptual illustration of the Y-Net Siamese network for 3D cell tracking.
 </div>
 
-The code is simple.
-Just wrap your images with `<div class="col-sm">` and place them inside `<div class="row">` (read more about the <a href="https://getbootstrap.com/docs/4.4/layout/grid/">Bootstrap Grid</a> system).
-To make images responsive, add `img-fluid` class to each; for rounded corners and shadows use `rounded` and `z-depth-1` classes.
-Here's the code for the last row of images above:
+### Architecture Design
 
-{% raw %}
+The **Y-Net** architecture combines:
 
-```html
-<div class="row justify-content-sm-center">
-  <div class="col-sm-8 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/6.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-  <div class="col-sm-4 mt-3 mt-md-0">
-    {% include figure.liquid path="assets/img/11.jpg" title="example image" class="img-fluid rounded z-depth-1" %}
-  </div>
-</div>
-```
+- **Siamese backbone**: Twin networks process cell candidates from consecutive time frames
+- **3D convolutions**: Capture volumetric spatial features essential for 3D analysis
+- **Multi-scale feature fusion**: The "Y" structure merges features at multiple resolutions
 
-{% endraw %}
+### Key Features
+
+1. **Embedding learning**: Cells are mapped to a discriminative feature space where matched pairs are close
+2. **Temporal consistency**: Exploits the assumption that cells move smoothly between frames
+3. **Division handling**: Special provisions for tracking daughter cells after mitosis
+
+---
+
+## International Collaboration
+
+This project was conducted during my **NSTC-funded internship** in Taiwan, providing invaluable experience in:
+
+- Working with an international research team
+- Adapting to different research cultures and methodologies
+- Communicating complex technical ideas across language barriers
+
+---
+
+## Technical Highlights
+
+| Aspect | Details |
+|--------|---------|
+| **Dimension** | Full 3D volumetric processing |
+| **Architecture** | Y-Net with Siamese branches |
+| **Input** | 3D time-lapse microscopy stacks |
+| **Output** | Cell trajectories across time |
+
+---
+
+## Skills Developed
+
+- **3D Computer Vision**: Volumetric feature extraction and analysis
+- **Siamese Networks**: Metric learning for object association
+- **Biomedical Imaging**: Understanding of microscopy data characteristics
+- **International Research**: Cross-cultural scientific collaboration

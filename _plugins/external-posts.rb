@@ -23,7 +23,13 @@ module ExternalPosts
     end
 
     def fetch_from_rss(site, src)
-      xml = HTTParty.get(src['rss_url']).body
+      xml = nil
+      begin
+        xml = HTTParty.get(src['rss_url']).body
+      rescue StandardError => e
+        puts "Error fetching RSS feed from #{src['rss_url']} - #{e.message}"
+        return
+      end
       return if xml.nil?
       begin
         feed = Feedjira.parse(xml)
@@ -92,7 +98,17 @@ module ExternalPosts
     end
 
     def fetch_content_from_url(url)
-      html = HTTParty.get(url).body
+      html = nil
+      begin
+        html = HTTParty.get(url).body
+      rescue StandardError => e
+        puts "Error fetching content from #{url} - #{e.message}"
+        return {
+          title: '',
+          content: '',
+          summary: ''
+        }
+      end
       parsed_html = Nokogiri::HTML(html)
 
       title = parsed_html.at('head title')&.text.strip || ''
